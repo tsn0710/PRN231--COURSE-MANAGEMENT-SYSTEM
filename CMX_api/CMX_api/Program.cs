@@ -1,0 +1,55 @@
+
+using CMX_api.Models;
+using Microsoft.AspNetCore.OData;
+using Microsoft.OData.ModelBuilder;
+
+namespace CMX_api
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            var builder = WebApplication.CreateBuilder(args);
+
+            // Add services to the container.
+            var modelBuilder = new ODataConventionModelBuilder();
+            modelBuilder.EntitySet<Assignment>("Assignments");
+            modelBuilder.EntitySet<Course>("Courses");
+            modelBuilder.EntitySet<CourseEnrollment>("CourseEnrollments");
+            modelBuilder.EntitySet<Question>("Questions");
+            modelBuilder.EntitySet<Quiz>("Quizes");
+            modelBuilder.EntitySet<QuizAttendance>("QuizAttendances");
+            modelBuilder.EntitySet<StudentAssignment>("StudentAssignments");
+            modelBuilder.EntitySet<User>("Users");
+            builder.Services.AddDbContext<CmxContext>();
+
+            builder.Services.AddControllers().AddOData(
+                options => options.Select().Filter().OrderBy().Expand().Count().SetMaxTop(null).AddRouteComponents(
+                    "odata",
+                    modelBuilder.GetEdmModel()));
+            builder.Services.AddCors();
+            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+
+            var app = builder.Build();
+
+            // Configure the HTTP request pipeline.
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
+
+            app.UseHttpsRedirection();
+            app.UseRouting();
+            app.UseCors(builder =>
+            {
+                builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+            });
+            app.UseEndpoints(endpoints => endpoints.MapControllers());
+
+            app.Run();
+        }
+    }
+}
