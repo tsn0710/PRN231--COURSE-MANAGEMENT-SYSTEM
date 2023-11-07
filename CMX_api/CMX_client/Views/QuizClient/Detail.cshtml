@@ -1,0 +1,76 @@
+﻿@model QuizDTO
+@{
+    ViewData["Title"] = "Detail Quiz";
+}
+<style>
+    textarea {
+        resize: none;
+        overflow-y: scroll;
+        min-height: 1px;
+        max-height: 200px;
+    }
+</style>
+<h2>Course: @Model.Course.Title</h2>
+<h2>Quiz: @Model.Title</h2>
+<table style="width:50%;height:auto;border-radius:20px;background-color: #5F9EC0">
+    <tr>
+        <th>
+            <p style="margin:5px">Email</p>
+        </th>
+        <th>
+            <p style="margin:5px">UserName</p>
+        </th>
+        <th>
+            <p style="margin:5px">Score</p>
+        </th>
+    </tr>
+    @foreach (QuizAttendanceDTO qa in Model.QuizAttendances)
+    {
+        <tr>
+            <td><p style="margin:5px">@qa.Student.Email</p></td>
+            <td><p style="margin:5px">@qa.Student.Username</p></td>
+            <td><p style="margin:5px">@qa.Score / @Model.Questions.Count</p></td>
+        </tr>
+    }
+</table>
+@{
+    int i = 0;
+}
+@foreach (QuestionDTO odv in Model.Questions)
+{
+    i++;
+    <div style="width:80%;height:auto;border-radius:20px;margin-top:10px;background-color:#7DCE85;padding:8px">
+        <label for="Q_@i">Question @i</label><br>
+        <textarea id="Q_@i" name="Q_@i" class="form-control" cols="40" rows="2" style="margin-left:5px;width:90%" oninput="auto_grow(this)" readonly>@odv.Question1</textarea>
+        <p style="margin:0px"><label for="A_@i">A</label></p>
+        <textarea id="A_@i" name="A_@i" class="form-control" cols="40" rows="1" style="margin-left:5px;width:70%" oninput="auto_grow(this)" readonly>@odv.OptionA</textarea>
+        <p style="margin:0px"><label for="B_@i">B</label></p>
+        <textarea id="B_@i" name="B_@i" class="form-control" cols="40" rows="1" style="margin-left:5px;width:70%" oninput="auto_grow(this)" readonly>@odv.OptionB</textarea>
+        <p style="margin:0px"><label for="C_@i">C</label></p>
+        <textarea id="C_@i" name="C_@i" class="form-control" cols="40" rows="1" style="margin-left:5px;width:70%" oninput="auto_grow(this)" readonly>@odv.OptionC</textarea>
+        <p style="margin:0px"><label for="D_@i">D</label></p>
+        <textarea id="D_@i" name="D_@i" class="form-control" cols="40" rows="1" style="margin-left:5px;width:70%" oninput="auto_grow(this)" readonly>@odv.OptionD</textarea>
+        <p>Right choice : @odv.CorrectOption</p>
+    </div>
+}
+<script>
+function auto_grow(element) {
+    element.style.height = "5px";
+    element.style.height = (element.scrollHeight) + "px";
+}
+</script>
+<script>
+    var x = @Model.Questions.Count
+    for (let i = 1; i <= x; i++) {
+        document.getElementById("Q_" + i).style.height = "5px";
+        document.getElementById("Q_" + i).style.height = (document.getElementById("Q_" + i).scrollHeight) + "px";
+        document.getElementById("A_" + i).style.height = "5px";
+        document.getElementById("A_" + i).style.height = (document.getElementById("A_" + i).scrollHeight) + "px";
+        document.getElementById("B_" + i).style.height = "5px";
+        document.getElementById("B_" + i).style.height = (document.getElementById("B_" + i).scrollHeight) + "px";
+        document.getElementById("C_" + i).style.height = "5px";
+        document.getElementById("C_" + i).style.height = (document.getElementById("C_" + i).scrollHeight) + "px";
+        document.getElementById("D_" + i).style.height = "5px";
+        document.getElementById("D_" + i).style.height = (document.getElementById("D_" + i).scrollHeight) + "px";
+    }
+</script>

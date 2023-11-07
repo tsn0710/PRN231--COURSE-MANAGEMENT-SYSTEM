@@ -1,0 +1,93 @@
+﻿@model IEnumerable<QuizDTO>;
+@inject IHttpContextAccessor HttpContextAccessor;
+@{
+    int userId = HttpContextAccessor.HttpContext.Session.GetInt32("UserId") ?? 0;
+}
+@{
+    ViewData["Title"] = "Quiz List";
+
+}
+<a class="page-link border-radi" asp-action="Add" asp-route-courseid="@ViewBag.courseId"
+   style="width:100%; border:2px solid #BD0A2A;color:white;background:#BD342E;text-align: center;border-radius:10px">Create new Quiz</a>
+<table class="table" style="width:85%">
+    <thead>
+        <tr>
+            <th>
+                <p>Quiz Id</p>
+            </th>
+            <th>
+                <p>Quiz Title</p>
+            </th>
+            <th>
+                <p>No. of Question</p>
+            </th>
+            <th>
+                <p>No. of Attendances</p>
+            </th>
+            <th>
+                <p>Result</p>
+            </th>
+            <th>
+            </th>
+            <th>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td style="width:9%">
+                    <p>@item.QuizId</p>
+                </td>
+                <td style="width:20%">
+                    <p>@item.Title</p>
+                </td>
+                <td style="width:20%">
+                    <p>@item.Questions.Count</p>
+                </td>
+                <td style="width:20%">
+                    <p>@item.QuizAttendances.Count</p>
+                </td>
+                <td style="width:20%">
+                @foreach(QuizAttendanceDTO qa in item.QuizAttendances)
+                {
+                    if (qa.StudentId == userId)
+                    {
+                            <p>@qa.Score / @item.Questions.Count</p>
+                    }
+                }
+                </td>
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                               <a class="page-link border-radi" asp-action="Update" asp-controller="QuizClient"
+                               asp-route-quizid="@item.QuizId" asp-route-courseid="@ViewBag.courseId"
+                               style="width:100%; border:2px solid #BD0A2A;color:white;background:#BD342E;text-align: center;border-radius:10px">Update</a>
+                            </td>
+                            <td>
+                                <a class="page-link border-radi" asp-action="Remove" asp-controller="QuizClient"
+                               asp-route-quizid="@item.QuizId" asp-route-courseid="@item.CourseId"
+                               style="width:100%; border:2px solid #BD0A2A;color:white;background:#BD342E;text-align: center;border-radius:10px">Remove</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <a class="page-link border-radi" asp-action="Detail" asp-controller="QuizClient"
+                               asp-route-quizid="@item.QuizId" asp-route-courseid="@ViewBag.courseId"
+                               style="width:100%; border:2px solid #BD0A2A;color:white;background:#BD342E;text-align: center;border-radius:10px">Detail</a>
+                            </td>
+                            <td>
+                                <a class="page-link border-radi" asp-action="Doquiz" asp-controller="QuizClient"
+                               asp-route-quizid="@item.QuizId" asp-route-courseid="@ViewBag.courseId"
+                               style="width:100%; border:2px solid #BD0A2A;color:white;background:#BD342E;text-align: center;border-radius:10px">Do quiz</a>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>

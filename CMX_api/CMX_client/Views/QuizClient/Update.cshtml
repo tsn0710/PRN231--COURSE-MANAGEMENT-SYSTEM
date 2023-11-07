@@ -1,0 +1,231 @@
+﻿@model QuizView
+@{
+    ViewData["Title"] = "Detail Quiz";
+}
+<style>
+    textarea {
+        resize: none;
+        overflow-y: scroll;
+        min-height: 1px;
+        max-height: 200px;
+    }
+</style>
+<p id="debug"></p>
+<h2>Course: @Model.Course.Title</h2>
+<h2>Quiz: @Model.Title</h2>
+<h2>Number of question: <input type="number" id="NoOfQuestion" value="@Model.NoOfQuestion" style="margin:5px;border-radius:5px;padding-left:10px" readonly /></h2>
+<table style="width:50%;height:auto;border-radius:20px;background-color: #5F9EC0;margin-bottom:10px">
+    <tr>
+        <th>
+            <p style="margin:5px">Email</p>
+        </th>
+        <th>
+            <p style="margin:5px">UserName</p>
+        </th>
+        <th>
+            <p style="margin:5px">Score</p>
+        </th>
+    </tr>
+    @foreach (QuizAttendanceDTO qa in Model.QuizAttendances)
+    {
+        <tr>
+            <td><p style="margin:5px">@qa.Student.Email</p></td>
+            <td><p style="margin:5px">@qa.Student.Username</p></td>
+            <td><p style="margin:5px">@qa.Score / @Model.Questions.Count</p></td>
+        </tr>
+    }
+</table>
+<table style="width:90%;height:280px;border-radius:20px;background-color: #CAD5C9" >
+    <tr>
+        <td><h3 style="margin:5px">Form:</h3></td>
+    </tr>
+    <tr>
+        <td><p style="float:right;margin:5px">Question(<span style="color:red">*</span>)</p></td>
+
+        <td>
+            <textarea id="Question" name="Question" class="form-control" cols="40" rows="2" style="margin-left:5px;width:90%" oninput="auto_grow(this)"></textarea>
+        </td>
+    </tr>
+    <tr>
+        <td><p style="float:right;margin:5px">Option A</p></td>
+        <td><textarea id="OptionA" name="OptionA" class="form-control" cols="40" rows="1" style="margin-left:5px;width:50%" oninput="auto_grow(this)"></textarea></td>
+    </tr>
+    <tr>
+        <td><p style="float:right;margin:5px">Option B</p></td>
+        <td><textarea id="OptionB" name="OptionB" class="form-control" cols="40" rows="1" style="margin-left:5px;width:50%" oninput="auto_grow(this)"></textarea></td>
+    </tr>
+    <tr>
+        <td><p style="float:right;margin:5px">Option C</p></td>
+        <td><textarea id="OptionC" name="OptionC" class="form-control" cols="40" rows="1" style="margin-left:5px;width:50%" oninput="auto_grow(this)"></textarea></td>
+    </tr>
+    <tr hidden>
+        <td><p style="float:right;margin:5px">Option C</p></td>
+        <td><textarea id="OptionC" name="OptionC" class="form-control" cols="40" rows="1" style="margin-left:5px;width:50%" oninput="auto_grow(this)"></textarea></td>
+    </tr>
+    <tr>
+        <td><p style="float:right;margin:5px">Option D</p></td>
+        <td><textarea id="OptionD" name="OptionD" class="form-control" cols="40" rows="1" style="margin-left:5px;width:50%" oninput="auto_grow(this)"></textarea></td>
+    </tr>
+    <tr>
+        <td><p style="float:right;margin:5px">CorrectOption (A OR B OR C OR D)</p></td>
+        <td><input type="text" id="CorrectOption" name="CorrectOption" class="form-control" cols="40" rows="1" style="margin-left:5px;width:50%"  maxlength="1" pattern="[ABCD]{1}"/></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td><button id="buttonAddThisQuestion" style="width:80%;height:40px;border-radius:8px;background-color:#CCA7DC;margin:5px" >Add this question</button></td>
+    </tr>
+</table>
+<form asp-action="UpdateQuizPost">
+<input type="number" id="NoOfQuestion2" name="NoOfQuestion2" value="@Model.NoOfQuestion" hidden />
+    <input type="number" id="quizId" name="quizId" value="@Model.QuizId" hidden />
+    <input type="number" id="courseId" name="courseId" value="@Model.CourseId" hidden />
+@{
+    int i = 0;
+}
+    <div id="ContainListQuestion" style="position:relative">
+<div id="ListQuestion">
+    <div id="question_0"></div>
+@foreach (QuestionDTO odv in Model.Questions)
+{
+    i++;
+    <div id="question_@i" style="position:relative;width:80%;height:100%;border-radius:20px;margin-top:10px;background-color:#7DCE85;padding:8px">
+        <input type="number" name="questionId_@i" value="@odv.QuestionId" hidden/>
+        <label for="Q_@i">Question @i</label><br>
+        <textarea id="Q_@i" name="Q_@i" class="form-control" cols="40" rows="2" style="margin-left:5px;width:90%" oninput="auto_grow(this)" onchange="edited(@i)">@odv.Question1</textarea>
+        <p style="margin:0px"><label for="A_@i">A</label></p>
+        <textarea id="A_@i" name="A_@i" class="form-control" cols="40" rows="1" style="margin-left:5px;width:70%" oninput="auto_grow(this)" onchange="edited(@i)">@odv.OptionA</textarea>
+        <p style="margin:0px"><label for="B_@i">B</label></p>
+        <textarea id="B_@i" name="B_@i" class="form-control" cols="40" rows="1" style="margin-left:5px;width:70%" oninput="auto_grow(this)" onchange="edited(@i)">@odv.OptionB</textarea>
+        <p style="margin:0px"><label for="C_@i">C</label></p>
+        <textarea id="C_@i" name="C_@i" class="form-control" cols="40" rows="1" style="margin-left:5px;width:70%" oninput="auto_grow(this)" onchange="edited(@i)">@odv.OptionC</textarea>
+        <p style="margin:0px"><label for="D_@i">D</label></p>
+        <textarea id="D_@i" name="D_@i" class="form-control" cols="40" rows="1" style="margin-left:5px;width:70%" oninput="auto_grow(this)" onchange="edited(@i)">@odv.OptionD</textarea>
+        <p style="margin:0px"><label for="E_@i">Right choice :(A OR B OR C OR D)</label></p>
+                    <input id="E_@i" name="E_@i" class="form-control" cols="40" rows="1" style="margin-left:5px;width:70%" oninput="auto_grow(this)" onchange="validate2(@i)" maxlength="1" value="@odv.CorrectOption">
+        <input id="S_@i" name="S_@i" type="text" value="n" hidden />
+        <button type="button" style="float:right;position:absolute;width:100px;height:30px;border-radius:10px;bottom:10px;right:10px;background-color:#E4B624" onclick="delete1(@i)"> Delete </button>
+    </div>
+}
+    </div>
+        <div class="row" style="margin-top:10px">
+            <div class="col-md-4"></div>
+            <div class="col-md-3"><input type="submit" value="Save all" class="btn btn-primary" style="width:80%;height:95%;border-radius:5px;background-color:#FF2D00" /></div>
+            <div class="col-md-4"></div>
+        </div>
+    </div>
+<script>
+    function auto_grow(element) {
+        element.style.height = "5px";
+        element.style.height = (element.scrollHeight) + "px";
+    }
+</script>
+<script>
+    var x = @Model.NoOfQuestion;
+    for (let i = 1; i <= x; i++) {
+            document.getElementById("Q_" + i).style.height = "5px";
+            document.getElementById("Q_" + i).style.height = (document.getElementById("Q_" + i).scrollHeight) + "px";
+            document.getElementById("A_" + i).style.height = "5px";
+            document.getElementById("A_" + i).style.height = (document.getElementById("A_" + i).scrollHeight) + "px";
+            document.getElementById("B_" + i).style.height = "5px";
+            document.getElementById("B_" + i).style.height = (document.getElementById("B_" + i).scrollHeight) + "px";
+            document.getElementById("C_" + i).style.height = "5px";
+            document.getElementById("C_" + i).style.height = (document.getElementById("C_" + i).scrollHeight) + "px";
+            document.getElementById("D_" + i).style.height = "5px";
+            document.getElementById("D_" + i).style.height = (document.getElementById("D_" + i).scrollHeight) + "px";
+    }
+</script>
+<script>
+    function add() {
+        var Question = document.getElementById('Question').value;
+        var OptionA = document.getElementById('OptionA').value;
+        var OptionB = document.getElementById('OptionB').value;
+        var OptionC = document.getElementById('OptionC').value;
+        var OptionD = document.getElementById('OptionD').value;
+        var CorrectOption = document.getElementById('CorrectOption').value;
+        var NoOfQuestion = document.getElementById('NoOfQuestion').value;
+        NoOfQuestion++;
+        document.getElementById('NoOfQuestion').value = NoOfQuestion;
+        document.getElementById('NoOfQuestion2').value = NoOfQuestion;
+            document.getElementById('debug').innerHTML = Question + "" + OptionA + "" + OptionB + "" + OptionC + "" + OptionD + "" + CorrectOption + "" + NoOfQuestion;
+        var NewIdOfQuestion = "Q_" + NoOfQuestion;
+        var NewIdOfOptionA = "A_" + NoOfQuestion;
+        var NewIdOfOptionB = "B_" + NoOfQuestion;
+        var NewIdOfOptionC = "C_" + NoOfQuestion;
+        var NewIdOfOptionD = "D_" + NoOfQuestion;
+        var NewIdOfCorrectOption = "E_" + NoOfQuestion;
+        var NewIdOfStatus = "S_" + NoOfQuestion;
+        var NewIdOfQuestionBig = "question_" + NoOfQuestion;
+        var NoOfLastQuestion = NoOfQuestion -1;
+            document.getElementById("question_" + NoOfLastQuestion).insertAdjacentHTML("afterend", "<div id=\"" + NewIdOfQuestionBig + "\" style=\"position:relative;width:80%;height:auto;border-radius:20px;margin-top:10px;background-color:#7DCE85;padding:8px\">        <label for=\"" + NewIdOfQuestion + "\">Question " + NoOfQuestion + "</label><br>        <textarea id=\"" + NewIdOfQuestion + "\" name=\"" + NewIdOfQuestion + "\" class=\"form-control\" cols=\"40\" rows=\"2\" style=\"margin-left:5px;width:90%\" oninput=\"auto_grow(this)\" >" + Question + "</textarea>        <p style=\"margin:0px\"><label for=\"" + NewIdOfOptionA + "\">A</label></p>        <textarea id=\"" + NewIdOfOptionA + "\" name=\"" + NewIdOfOptionA + "\" class=\"form-control\" cols=\"40\" rows=\"1\" style=\"margin-left:5px;width:70%\" oninput=\"auto_grow(this)\" >" + OptionA + "</textarea>        <p style=\"margin:0px\"><label for=\"" + NewIdOfOptionB + "\">B</label></p>        <textarea id=\"" + NewIdOfOptionB + "\" name=\"" + NewIdOfOptionB + "\" class=\"form-control\" cols=\"40\" rows=\"1\" style=\"margin-left:5px;width:70%\" oninput=\"auto_grow(this)\" >" + OptionB + "</textarea>        <p style=\"margin:0px\"><label for=\"" + NewIdOfOptionC + "\">C</label></p>        <textarea id=\"" + NewIdOfOptionC + "\" name=\"" + NewIdOfOptionC + "\" class=\"form-control\" cols=\"40\" rows=\"1\" style=\"margin-left:5px;width:70%\" oninput=\"auto_grow(this)\" >" + OptionC + "</textarea>        <p style=\"margin:0px\"><label for=\"" + NewIdOfOptionD + "\">D</label></p>        <textarea id=\"" + NewIdOfOptionD + "\" name=\"" + NewIdOfOptionD + "\" class=\"form-control\" cols=\"40\" rows=\"1\" style=\"margin-left:5px;width:70%\" oninput=\"auto_grow(this)\" >" + OptionD + "</textarea>        <p style=\"margin:0px\"><label for=\"" + NewIdOfCorrectOption + "\">Right choice :(A OR B OR C OR D)</label></p>        <textarea id=\"" + NewIdOfCorrectOption + "\" name=\"" + NewIdOfCorrectOption + "\" class=\"form-control\" cols=\"40\" rows=\"1\" style=\"margin-left:5px;width:70%\" oninput=\"auto_grow(this)\" maxlength=\"1\" pattern=\"[ABCD]{1}\">" + CorrectOption + "</textarea>        <input id=\"" + NewIdOfStatus + "\" name=\"" + NewIdOfStatus + "\" type=\"text\" value=\"c\" hidden />   <button type=\"button\" style=\"float:right;position:absolute;width:100px;height:30px;border-radius:10px;bottom:10px;right:10px;background-color:#E4B624\" onclick=\"delete1(" + NoOfQuestion + ")\"> Delete </button>   </div>");
+        document.getElementById(NewIdOfQuestion).style.height = "5px";
+            document.getElementById(NewIdOfQuestion).style.height = (document.getElementById(NewIdOfQuestion).scrollHeight) + "px";
+            document.getElementById(NewIdOfOptionA).style.height = "5px";
+            document.getElementById(NewIdOfOptionA).style.height = (document.getElementById(NewIdOfOptionA).scrollHeight) + "px";
+            document.getElementById(NewIdOfOptionB).style.height = "5px";
+            document.getElementById(NewIdOfOptionB).style.height = (document.getElementById(NewIdOfOptionB).scrollHeight) + "px";
+            document.getElementById(NewIdOfOptionC).style.height = "5px";
+            document.getElementById(NewIdOfOptionC).style.height = (document.getElementById(NewIdOfOptionC).scrollHeight) + "px";
+            document.getElementById(NewIdOfOptionD).style.height = "5px";
+            document.getElementById(NewIdOfOptionD).style.height = (document.getElementById(NewIdOfOptionD).scrollHeight) + "px";
+            
+     }
+</script>
+<script>
+    function delete1(questionID) {
+
+            document.getElementById('question_' + questionID).style.display = 'none';
+            document.getElementById("S_" + questionID).setAttribute("value", "d");
+            document.getElementById('S_' + questionID).value = "d";
+    }
+</script>
+    <script>
+        function edited(questionID) {
+            document.getElementById("S_" + questionID).setAttribute("value", "e");
+            document.getElementById('S_' + questionID).value = "e";
+        }
+    </script>
+ <script language="javascript">
+        document.getElementById('buttonAddThisQuestion').onclick = validate;
+        function validate() {
+
+            var optionValue = document.getElementById('CorrectOption').value;
+        var reg=/[ABCD]{1}/;
+        if (reg.test(optionValue)) {
+             add();
+             return true;
+        }
+        alert("CorrectOption can't have any thing other than [ABCD]{1} ");
+        return false;
+            
+    }   ;
+        function validate2(questionID) {
+            document.getElementById('E_' + questionID).style.height = document.getElementById('D_' + questionID).style.height;
+            var optionValue = document.getElementById('E_'+questionID).value;
+            var reg = /[ABCD]{1}/;
+            if (reg.test(optionValue)) {
+                edited(questionID);
+                return true;
+            }
+            document.getElementById('E_' + questionID).value='A';
+            alert("CorrectOption can't have any thing other than [ABCD]{1} ");
+            return false;
+
+        };
+
+</script>
+</form>
+@*<div id=\""NewIdOfQuestionBig"\" style=\"width:80%;height:auto;border-radius:20px;margin-top:10px;background-color:#7DCE85;padding:8px\">
+    <label for=\""+NewIdOfQuestion+"\">Question "+MaxNo+"</label><br>
+    <textarea id=\""+NewIdOfQuestion+"\" name=\""+NewIdOfQuestion+"\" class="\form-control\" cols=\"40\" rows=\"2\" style=\"margin-left:5px;width:90%\" oninput=\"auto_grow(this)\">"+Question+"</textarea>
+    <p style=\"margin:0px\"><label for=\""+NewIdOfOptionA+"\">A</label></p>
+    <textarea id=\""+NewIdOfOptionA+"\" name=\""+NewIdOfOptionA+"\" class=\"form-control\" cols=\"40\" rows=\"1\" style=\"margin-left:5px;width:70%\" oninput=\"auto_grow(this)\">"+OptionA+"</textarea>
+    <p style=\"margin:0px\"><label for=\""+NewIdOfOptionB+"\">B</label></p>
+    <textarea id=\""+NewIdOfOptionB+"\" name=\""+NewIdOfOptionB+"\" class=\"form-control\" cols=\"40\" rows=\"1\" style=\"margin-left:5px;width:70%\" oninput=\"auto_grow(this)\">"+OptionB+"</textarea>
+    <p style=\"margin:0px\"><label for=\""+NewIdOfOptionC+"\">C</label></p>
+    <textarea id=\""+NewIdOfOptionC+"\" name=\""+NewIdOfOptionC+"\" class=\"form-control\" cols=\"40\" rows=\"1\" style=\"margin-left:5px;width:70%\" oninput=\"auto_grow(this)\">"+OptionC+"</textarea>
+    <p style=\"margin:0px\"><label for=\""+NewIdOfOptionD+"\">D</label></p>
+    <textarea id=\""+NewIdOfOptionD+"\" name=\""+NewIdOfOptionD+"\" class=\"form-control\" cols=\"40\" rows=\"1\" style=\"margin-left:5px;width:70%\" oninput=\"auto_grow(this)\">"+OptionD+"</textarea>
+    <p style=\"margin:0px\"><label for=\""+NewIdOfCorrectOption+"\">Right choice :</label></p>
+    <textarea id=\""+NewIdOfCorrectOption+"\" name=\""+NewIdOfCorrectOption+"\" class=\"form-control\" cols=\"40\" rows=\"1\" style=\"margin-left:5px;width:70%\" oninput=\"auto_grow(this)\">"+CorrectOption+"</textarea>
+    <input id=\""+NewIdOfStatus+"\" name=\""+NewIdOfStatus+"\" type=\"text\" value=\"c\" hidden />
+</div>*@

@@ -1,0 +1,115 @@
+﻿@model QuizView
+@{
+    ViewData["Title"] = "Do Quiz";
+}
+<style>
+    label {
+        white-space: pre-wrap;
+    }
+
+    input[type="radio"] {
+        /* remove standard background appearance */
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        /* create custom radiobutton appearance */
+        display: inline-block;
+        width: 13px;
+        height: 13px;
+        /* background-color only for content */
+        background-clip: content-box;
+        background-color: #e7e6e7;
+        border-radius: 50%;
+        border:0px ;
+    }
+
+        /* appearance for checked radiobutton */
+        input[type="radio"]:checked {
+            background-color: #D65200;
+            background-color: #D65200;
+            border: 0px;
+        }
+</style>
+
+<h2>Course: @Model.Course.Title</h2>
+<h2>Quiz: @Model.Title</h2>
+<h2>Number of question: <input type="number" id="NoOfQuestion" value="@Model.NoOfQuestion" style="margin:5px;border-radius:5px;padding-left:10px" readonly /></h2>
+<form asp-action="DoQuizPost">
+    <input type="number" id="NoOfQuestion2" name="NoOfQuestion2" value="@Model.NoOfQuestion" hidden />
+    <input type="number" id="quizId" name="quizId" value="@Model.QuizId" hidden />
+    <input type="number" id="courseId" name="courseId" value="@Model.CourseId" hidden />
+    @{
+        int i = 0;
+    }
+    @foreach (QuestionDTO odv in Model.Questions)
+    {
+        i++;
+        <div id="question_@i" style="position:relative;width:80%;height:100%;border-radius:20px;margin-top:10px;background-color:#7DCE85;padding:8px">
+            <label style="color: dimgrey" >@i, </label><br>
+            <label>@odv.Question1</label><br>
+            <div style="display:flex; flex-direction: row; justify-content: normal; align-items: baseline">
+                <input type="radio" id="A_@i" name="Q_@i" value="A" style="margin-right:5px;margin-top:12px">
+                <label for="A_@i">@odv.OptionA</label><br>
+            </div>
+            <div style="display:flex; flex-direction: row; justify-content: normal; align-items: baseline">
+                <input type="radio" id="B_@i" name="Q_@i" value="B" style="margin-right:5px;margin-top:12px">
+                <label for="B_@i">@odv.OptionB</label><br>
+            </div>
+            <div style="display:flex; flex-direction: row; justify-content: normal; align-items: baseline">
+                <input type="radio" id="C_@i" name="Q_@i" value="C" style="margin-right:5px;margin-top:12px">
+                <label for="C_@i">@odv.OptionC</label><br>
+            </div>
+            <div style="display:flex; flex-direction: row; justify-content: normal; align-items: baseline">
+                <input type="radio" id="D_@i" name="Q_@i" value="D" style="margin-right:5px;margin-top:12px">
+                <label for="D_@i">@odv.OptionD</label>
+            </div>
+        </div>
+    }
+    <div class="row" style="margin-top:10px">
+        <div class="col-md-4"></div>
+        <div class="col-md-3"><input type="submit" value="Submit Quiz" class="btn btn-primary" style="width:80%;height:95%;border-radius:5px;background-color:#D65200" /></div>
+        <div class="col-md-4"></div>
+    </div>
+</form>
+<script type='text/javascript'>
+    var isCtrl = false;
+    document.onkeyup = function (e) {
+        if (e.which == 17)
+            isCtrl = false;
+    }
+    document.onkeydown = function (e) {
+        if (e.which == 123)
+            isCtrl = true;
+        if (((e.which == 85) || (e.which == 65) || (e.which == 88) || (e.which == 67) || (e.which == 86) || (e.which == 2) || (e.which == 3) || (e.which == 123) || (e.which == 83)) && isCtrl == true) {
+            alert('This button is disabled');
+            return false;
+        }
+    }
+    // right click code
+    var isNS = (navigator.appName == "Netscape") ? 1 : 0;
+    if (navigator.appName == "Netscape") document.captureEvents(Event.MOUSEDOWN || Event.MOUSEUP);
+    function mischandler() {
+        alert('This button is disabled');
+        return false;
+    }
+    function mousehandler(e) {
+        var myevent = (isNS) ? e : event;
+        var eventbutton = (isNS) ? myevent.which : myevent.button;
+        if ((eventbutton == 2) || (eventbutton == 3)) return false;
+    }
+    document.oncontextmenu = mischandler;
+    document.onmousedown = mousehandler;
+    document.onmouseup = mousehandler;
+    //select content code disable  alok goyal
+    function killCopy(e) {
+        return false
+    }
+    function reEnable() {
+        return true
+    }
+    document.onselectstart = new Function("return false")
+    if (window.sidebar) {
+        document.onmousedown = killCopy
+        document.onclick = reEnable
+    }
+</script>
